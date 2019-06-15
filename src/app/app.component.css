@@ -1,0 +1,26 @@
+:host /deep/ angular-editor#myEditor .angular-editor-button[title="Insert Image"]{
+    display: none
+    }
+    p.lm {
+        margin-left: 120px;
+        margin-right: 100px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      p.lt {
+        margin-left: 100px;
+        margin-right: 100px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      p.tittle{
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      div.lm{
+        margin-left: 120px;
+        margin-right: 100px;
+        
+      }
+      img.logo  {
+        float: none;
+        margin-top: 1em;
+        margin-right: 60em;
+      }

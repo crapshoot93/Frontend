@@ -1,0 +1,449 @@
+<app-cabecera name="top"></app-cabecera>
+
+
+
+
+
+
+
+
+<div align="center" id="seleccion" *ngIf="mostrar">
+    <br>
+
+    <h1 >Reportes NSolar</h1>
+    <br>
+
+    <br>
+    <form id="myForm" >
+
+        <h2>Cliente</h2>
+        <select  [(ngModel)]="cliente" id="clientname" name="clientname" (change)="selected();controlA=controlA+1">
+          <option>Seleccione un cliente</option>
+          <option *ngFor='let client of clients$.systems' [ngValue]="client">{{client.system_name}}</option>
+        </select>
+        <p>{{cliente.system_id}}</p>
+        <br>
+
+
+
+        <h2>Fecha</h2>
+      <input type="month" [(ngModel)] ="fechainforme" name="fecha1" id="fecha1" value="{{curDate | date:'yyyy-MM'}}" min="{{postCliente.operational_at*1000 | date: 'yyyy-MM'}}" max="{{curDate | date:'yyyy-MM'}}" (ngModelChange)="fechainforme=$event;fechaSeleccionada();controlB=controlB+1;unixtima=(this.fechainforme.getTime()/1000)">
+      <p>{{unixtima}}</p>
+      <p>{{postCliente.operational_at}}</p>
+
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <div class="w3-container">
+        <a href="#top"><button href="#" class="w3-btn w3-black" (click)="Siguiente()">Siguiente</button></a>
+
+        <a href="#top"><button type="reset" class="w3-btn w3-white w3-margin-left" (click)="controlA=0;controlB=0">Limpiar</button></a>
+
+      </div>
+
+    </form>
+
+
+</div>
+<div *ngIf="mostrar2">
+
+   <br>
+   <p align="center"><b><u>CAPTACIÓN DE ENERGÍA DE LOS PANELES</u></b></p>
+
+    <br>
+    <p>  1. Hacer click en este link y seleccionar toda la información que aparezca en él.</p><a target="_blank" href="https://enlighten.enphaseenergy.com/systems/{{cliente.system_id}}/inverter_data_x/energy.json?start_date={{fechainforme | date:'yyyy-MM-dd':'+0500'}}&end_date={{diaEnd | date:'yyyy-MM-dd':'+0500'}}"><h5 class="my-1 py-1 mx-2 px-2" align="left" >https://enlighten.enphaseenergy.com/systems/{{cliente.system_id}}/inverter_data_x/energy.json?start_date={{fechainforme | date:'yyyy-MM-dd':'+0500'}}&end_date={{diaEnd | date:'yyyy-MM-dd':'+0500'}} </h5></a>
+    <br>
+    <br>
+    <p>  2. Pegar aquí la información seleccionada en el link anterior.</p><textarea class="my-4 py-4 mx-4 px-4" rows="8" cols="50" name="jsonMicro" [(ngModel)] ="jsonmicro">
+
+        </textarea>
+
+    <h4>{{jsonmicro}}</h4>
+    <br>
+    <a href="#top"><button href="#" class="w3-btn w3-black my-1 py-1 mx-4 px-4" (click)="verReporte();MedidorBi()">Ver Reporte</button></a>
+    <button href="#" class="w3-btn w3-black w3-margin-left my-1 py-1 mx-4 px-4" (click)="cargaratras()"*ngIf="!mostrar_REPORTE">Atras</button>
+
+  </div>
+<div *ngIf="mostrar3" align="center"  class="container">
+
+
+
+  <div align="left" class="container" *ngIf="!mostrar_REPORTE">
+
+    <p align="right" class="my-4 py-4 mx-5 px-5 tittle">  {{curDate | date:'yyyy-MM-dd':'-0500'}}</p>
+    <p></p>
+
+    <p class="tittle" align="center"><b><u><mark>  {{cliente.system_name}} </mark></u></b></p>
+    <p class="tittle" align="center"><b><u><mark>   {{fechainforme| date:'MMMM':'+0100'|uppercase}} {{fechainforme| date:'yyyy':'+0100'|uppercase}}</mark></u></b></p>
+    <p class="tittle" align="center"><b> INFORME MENSUAL DE MONITOREO Y GENERACIÓN</b></p>
+      <br>
+      <br>
+    <p>  1. CARACTERÍSTICAS DEL SISTEMA:</p>
+    <p>  - Módulos: <u><i>{{postCliente.modules}} módulos {{postCliente2.clientExcelObject.panel}} - {{postCliente2.clientExcelObject.modelo_Panel}} de {{postCliente2.clientExcelObject.watts_Panel}}W</i></u></p>
+
+    <p>  - Microinversores: <u><i>{{postCliente.modules}} Enphase Energy {{postCliente2.clientExcelObject.microinversor}}.</i></u></p>
+
+    <p>  - Capacidad total instalada:<u><i>{{postCliente2.clientExcelObject.sistema_kW}} kWp DC, {{postCliente.size_w/1000}} kW AC.</i></u></p>
+
+    <p>  - Inicio de Operación: <u><i>{{postCliente.operational_at*1000| date:'dd':'+0100'}} de {{postCliente.operational_at*1000| date:'MMMM':'+0100'}} de {{postCliente.operational_at*1000| date:'yyyy':'+0100'}}.</i></u></p>
+
+    <p>  - Instalación de medidor bidireccional: <u><i>{{medidor1}}</i></u></p>
+
+    <div [innerHtml]="erro11 | safeHtml"  *ngIf="p1p1"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p1p1e" (click)="p1p1e=false; p1t1a=true; p1t1b=true;  p1t1=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1p1e"(click)="p1p1=false; p1p1e=false; p1t1=false; p1b1=true; p1par1=''; erro11=''; p1b2=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p1b1"(click)="funcionMas1()">   +   </button>
+
+    <angular-editor [(ngModel)]="erro11" [config]="editorConfig"*ngIf="p1t1" id="myEditor"></angular-editor>
+
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p1t1a"(click)="funcionAceptar1()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1t1b"(click)="funcionCancelar1()">Cancelar</button>
+
+
+    <div [innerHtml]="erro12 | safeHtml"  *ngIf="p1p2"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p1p2e" (click)="p1p2e=false; p1t2a=true; p1t2b=true;  p1t2=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1p2e"(click)="p1p2=false; p1p2e=false; p1t2=false; p1b2=true; p1par2=''; erro12=''; p1b3=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p1b2"(click)="funcionMas2()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p1b2"(click)="p1b2=false">   -   </button>
+    <angular-editor [(ngModel)]="erro12" [config]="editorConfig"*ngIf="p1t2" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p1t2a"(click)="funcionAceptar2()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1t2b"(click)="funcionCancelar2()">Cancelar</button>
+
+    <div [innerHtml]="erro13 | safeHtml"  *ngIf="p1p3"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p1p3e" (click)="p1p3e=false; p1t3a=true; p1t3b=true;  p1t3=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1p3e"(click)="p1p3=false; p1p3e=false; p1t3=false; p1b3=true; p1par3=''; erro13=''; p1b4=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p1b3"(click)="funcionMas3()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p1b3"(click)="p1b3=false">   -   </button>
+
+    <angular-editor [(ngModel)]="erro13" [config]="editorConfig"*ngIf="p1t3" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p1t3a"(click)="funcionAceptar3()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1t3b"(click)="funcionCancelar3()">Cancelar</button>
+
+    <div [innerHtml]="erro14 | safeHtml"  *ngIf="p1p4"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p1p4e" (click)="p1p4e=false; p1t4a=true; p1t4b=true;  p1t4=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1p4e"(click)="p1p4=false; p1p4e=false; p1t4=false; p1b4=true; p1par4=''; erro14=''; p1b5=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p1b4"(click)="funcionMas4()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p1b4"(click)="p1b4=false">   -   </button>
+    <angular-editor [(ngModel)]="erro14" [config]="editorConfig"*ngIf="p1t4" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p1t4a"(click)="funcionAceptar4()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1t4b"(click)="funcionCancelar4()">Cancelar</button>
+
+    <div [innerHtml]="erro15 | safeHtml"  *ngIf="p1p5"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p1p5e" (click)="p1p5e=false; p1t5a=true; p1t5b=true;  p1t5=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1p5e"(click)="p1p5=false; p1p5e=false; p1t5=false; p1b5=true; p1par5=''; erro15=''">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p1b5"(click)="funcionMas5()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p1b5"(click)="p1b5=false">   -   </button>
+    <angular-editor [(ngModel)]="erro15" [config]="editorConfig"*ngIf="p1t5" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p1t5a"(click)="funcionAceptar5()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p1t5b"(click)="funcionCancelar5()">Cancelar</button>
+    <br>
+    <p>2. NOTAS DE GENERACIÓN:</p>
+    <p>- Durante el mes de {{fechainforme| date:'MMMM':'+0100'}} el sistema funcionó satisfactoriamente.</p>
+    <p><span [ngStyle]="{'background-color':'yellow'}">- La generación total fue de {{postCliente2.totalGeneracion}} kWh durante el mes.</span></p>
+    <p><span [ngStyle]="{'background-color':'yellow'}">- La generación {{postCliente2.generationComparizon.indicator|lowercase}} en un {{postCliente2.generationComparizon.value}}% comparado al mes anterior.</span></p>
+    <p>- El módulo que más generó, aportó {{postCliente3.maxGeneration}} kWh en el mes de {{fechainforme| date:'MMMM':'+0100'}}.</p>
+    <p>- El módulo que menos generó, aportó {{postCliente3.minGeneration}} kWh en el mes de {{fechainforme| date:'MMMM':'+0100'}}.</p>
+    <p>- La mayor generación fue el día {{postCliente2.mayorGeneration.day}} con {{postCliente2.mayorGeneration.generation}} kWh.</p>
+    <p>- La menor generación fue el día {{postCliente2.minorGeneration.day}} con {{postCliente2.minorGeneration.generation}} kWh.</p>
+    <p>- Con la energía mensual generada podría alimentar por un día a {{postCliente2.houses}} casas sin tener que quemar una sola gota de combustible fósil.</p>
+    <p>- Se ha dejado de liberar {{postCliente2.metrictsTons}} toneladas de carbono a la atmósfera que es equivalente al almacenado por {{postCliente2.trees}} árboles. ¡Felicidades!</p>
+
+    <div [innerHtml]="erro21 | safeHtml"  *ngIf="p2p1"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p2p1e" (click)="p2p1e=false; p2t1a=true; p2t1b=true;  p2t1=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2p1e"(click)="p2p1=false; p2p1e=false; p2t1=false; p2b1=true; p2par1=''; erro21=''; p2b2=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p2b1"(click)="funcionMas21()">   +   </button>
+    <angular-editor [(ngModel)]="erro21" [config]="editorConfig"*ngIf="p2t1" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p2t1a"(click)="funcionAceptar21()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2t1b"(click)="funcionCancelar21()">Cancelar</button>
+
+    <div [innerHtml]="erro22 | safeHtml"  *ngIf="p2p2"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p2p2e" (click)="p2p2e=false; p2t2a=true; p2t2b=true;  p2t2=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2p2e"(click)="p2p2=false; p2p2e=false; p2t2=false; p2b2=true; p2par2=''; erro22=''; p2b3=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p2b2"(click)="funcionMas22()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p2b2"(click)="p2b2=false">   -   </button>
+    <angular-editor [(ngModel)]="erro22" [config]="editorConfig"*ngIf="p2t2" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p2t2a"(click)="funcionAceptar22()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2t2b"(click)="funcionCancelar22()">Cancelar</button>
+
+    <div [innerHtml]="erro23 | safeHtml"  *ngIf="p2p3"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p2p3e" (click)="p2p3e=false; p2t3a=true; p2t3b=true;  p2t3=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2p3e"(click)="p2p3=false; p2p3e=false; p2t3=false; p2b3=true; p2par3=''; erro23=''; p2b4=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p2b3"(click)="funcionMas23()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p2b3"(click)="p2b3=false">   -   </button>
+    <angular-editor [(ngModel)]="erro23" [config]="editorConfig"*ngIf="p2t3" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p2t3a"(click)="funcionAceptar23()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2t3b"(click)="funcionCancelar23()">Cancelar</button>
+
+    <div [innerHtml]="erro24 | safeHtml"  *ngIf="p2p4"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p2p4e" (click)="p2p4e=false; p2t4a=true; p2t4b=true;  p2t4=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2p4e"(click)="p2p4=false; p2p4e=false; p2t4=false; p2b4=true; p2par4=''; erro24=''; p2b5=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p2b4"(click)="funcionMas24()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p2b4"(click)="p2b4=false">   -   </button>
+    <angular-editor [(ngModel)]="erro24" [config]="editorConfig"*ngIf="p2t4" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p2t4a"(click)="funcionAceptar24()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2t4b"(click)="funcionCancelar24()">Cancelar</button>
+
+    <div [innerHtml]="erro25 | safeHtml"  *ngIf="p2p5"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p2p5e" (click)="p2p5e=false; p2t5a=true; p2t5b=true;  p2t5=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2p5e"(click)="p2p5=false; p2p5e=false; p2t5=false; p2b5=true; p2par5=''; erro25=''">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p2b5"(click)="funcionMas25()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p2b5"(click)="p2b5=false">   -   </button>
+    <angular-editor [(ngModel)]="erro25" [config]="editorConfig"*ngIf="p2t5" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p2t5a"(click)="funcionAceptar25()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p2t5b"(click)="funcionCancelar25()">Cancelar</button>
+    <BR>
+    <p>3. RECOMENDACIONES:</p>
+    <p>- Realizar la limpieza y el mantenimiento en el período sugerido.</p>
+    <p>- Monitoreo diario de cada módulo fotovoltaico, verificando que se encuentre dentro del rango de potencia, voltaje y corriente.</p>
+    <p>- No exceder su consumo promedio para obtener un ahorro energético y económico favorable.</p>
+    <p>- Reportar cualquier anomalía a nuestro personal autorizado. Cualquier daño que haya en el proyecto por causas ajenas, el cliente cubrirá con la reparación.</p>
+    <p>- Le reiteramos que es importante incluir su sistema fotovoltaico en su póliza de seguro, por favor verifíquelo con su corredor de seguros.</p>
+    <div [innerHtml]="erro31 | safeHtml"  *ngIf="p3p1"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p3p1e" (click)="p3p1e=false; p3t1a=true; p3t1b=true;  p3t1=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3p1e"(click)="p3p1=false; p3p1e=false; p3t1=false; p3b1=true; p3par1=''; erro31=''; p3b2=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p3b1"(click)="funcionMas31()">   +   </button>
+    <angular-editor [(ngModel)]="erro31" [config]="editorConfig"*ngIf="p3t1" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p3t1a"(click)="funcionAceptar31()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3t1b"(click)="funcionCancelar31()">Cancelar</button>
+
+    <div [innerHtml]="erro32 | safeHtml"  *ngIf="p3p2"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p3p2e" (click)="p3p2e=false; p3t2a=true; p3t2b=true;  p3t2=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3p2e"(click)="p3p2=false; p3p2e=false; p3t2=false; p3b2=true; p3par2=''; erro32=''; p3b3=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p3b2"(click)="funcionMas32()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p3b2"(click)="p3b2=false">   -   </button>
+    <angular-editor [(ngModel)]="erro32" [config]="editorConfig"*ngIf="p3t2" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p3t2a"(click)="funcionAceptar32()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3t2b"(click)="funcionCancelar32()">Cancelar</button>
+
+    <div [innerHtml]="erro33 | safeHtml"  *ngIf="p3p3"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p3p3e" (click)="p3p3e=false; p3t3a=true; p3t3b=true;  p3t3=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3p3e"(click)="p3p3=false; p3p3e=false; p3t3=false; p3b3=true; p3par3=''; erro33=''; p3b4=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p3b3"(click)="funcionMas33()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p3b3"(click)="p3b3=false">   -   </button>
+    <angular-editor [(ngModel)]="erro33" [config]="editorConfig"*ngIf="p3t3" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p3t3a"(click)="funcionAceptar33()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3t3b"(click)="funcionCancelar33()">Cancelar</button>
+
+    <div [innerHtml]="erro34 | safeHtml"  *ngIf="p3p4"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p3p4e" (click)="p3p4e=false; p3t4a=true; p3t4b=true;  p3t4=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3p4e"(click)="p3p4=false; p3p4e=false; p3t4=false; p3b4=true; p3par4=''; erro34=''; p3b5=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p3b4"(click)="funcionMas34()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p3b4"(click)="p3b4=false">   -   </button>
+    <angular-editor [(ngModel)]="erro34" [config]="editorConfig"*ngIf="p3t4" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p3t4a"(click)="funcionAceptar34()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3t4b"(click)="funcionCancelar34()">Cancelar</button>
+
+    <div [innerHtml]="erro35 | safeHtml"  *ngIf="p3p5"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p3p5e" (click)="p3p5e=false; p3t5a=true; p3t5b=true;  p3t5=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3p5e"(click)="p3p5=false; p3p5e=false; p3t5=false; p3b5=true; p3par5=''; erro35=''">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p3b5"(click)="funcionMas35()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p3b5"(click)="p3b5=false">   -   </button>
+    <angular-editor [(ngModel)]="erro35" [config]="editorConfig"*ngIf="p3t5" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p3t5a"(click)="funcionAceptar35()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p3t5b"(click)="funcionCancelar35()">Cancelar</button>
+    <BR>
+
+
+
+    <p>4. <mark>PRÓXIMA LIMPIEZA Y MANTENIMIENTO:</mark><span style="opacity:0;">..</span><mark>{{fechalimpieza| date:'MMMM':'+0100'| titlecase}} {{fechalimpieza| date:'yyyy':'+0100'|uppercase}}.</mark></p>
+    <input type="month" [(ngModel)] ="fechalimpieza" name="fecha2" id="fecha2" value="{{curDate | date:'yyyy-MM'}}" (ngModelChange)="fechalimpieza=$event;">
+    <div [innerHtml]="erro41 | safeHtml"  *ngIf="p4p1"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p4p1e" (click)="p4p1e=false; p4t1a=true; p4t1b=true;  p4t1=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4p1e"(click)="p4p1=false; p4p1e=false; p4t1=false; p4b1=true; p4par1=''; erro41=''; p4b2=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p4b1"(click)="funcionMas41()">   +   </button>
+    <angular-editor [(ngModel)]="erro41" [config]="editorConfig"*ngIf="p4t1" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p4t1a"(click)="funcionAceptar41()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4t1b"(click)="funcionCancelar41()">Cancelar</button>
+
+    <div [innerHtml]="erro42 | safeHtml"  *ngIf="p4p2"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p4p2e" (click)="p4p2e=false; p4t2a=true; p4t2b=true;  p4t2=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4p2e"(click)="p4p2=false; p4p2e=false; p4t2=false; p4b2=true; p4par2=''; erro42=''; p4b3=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p4b2"(click)="funcionMas42()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p4b2"(click)="p4b2=false">   -   </button>
+    <angular-editor [(ngModel)]="erro42" [config]="editorConfig"*ngIf="p4t2" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p4t2a"(click)="funcionAceptar42()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4t2b"(click)="funcionCancelar42()">Cancelar</button>
+
+    <div [innerHtml]="erro43 | safeHtml"  *ngIf="p4p3"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p4p3e" (click)="p4p3e=false; p4t3a=true; p4t3b=true;  p4t3=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4p3e"(click)="p4p3=false; p4p3e=false; p4t3=false; p4b3=true; p4par3=''; erro43=''; p4b4=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p4b3"(click)="funcionMas43()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p4b3"(click)="p4b3=false">   -   </button>
+    <angular-editor [(ngModel)]="erro43" [config]="editorConfig"*ngIf="p4t3" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p4t3a"(click)="funcionAceptar43()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4t3b"(click)="funcionCancelar43()">Cancelar</button>
+
+    <div [innerHtml]="erro44 | safeHtml"  *ngIf="p4p4"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p4p4e" (click)="p4p4e=false; p4t4a=true; p4t4b=true;  p4t4=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4p4e"(click)="p4p4=false; p4p4e=false; p4t4=false; p4b4=true; p4par4=''; erro44=''; p4b5=false">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p4b4"(click)="funcionMas44()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p4b4"(click)="p4b4=false">   -   </button>
+    <angular-editor [(ngModel)]="erro44" [config]="editorConfig"*ngIf="p4t4" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p4t4a"(click)="funcionAceptar44()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4t4b"(click)="funcionCancelar44()">Cancelar</button>
+
+    <div [innerHtml]="erro45 | safeHtml"  *ngIf="p4p5"></div>
+    <button href="#" class="w3-btn w3-blue" *ngIf="p4p5e" (click)="p4p5e=false; p4t5a=true; p4t5b=true;  p4t5=true">Editar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4p5e"(click)="p4p5=false; p4p5e=false; p4t5=false; p4b5=true; p4par5=''; erro45=''">Eliminar</button>
+    <p> </p> <button type="button" class="btn btn-outline-dark" *ngIf="p4b5"(click)="funcionMas45()">   +   </button>
+    <button type="button" class="btn btn-outline-red w3-margin-left" *ngIf="p4b5"(click)="p4b5=false">   -   </button>
+    <angular-editor [(ngModel)]="erro45" [config]="editorConfig"*ngIf="p4t5" id="myEditor"></angular-editor>
+    <button href="#" class="w3-btn w3-green w3-margin-left" *ngIf="p4t5a"(click)="funcionAceptar45()">Aceptar</button>
+    <button href="#" class="w3-btn w3-red w3-margin-left" *ngIf="p4t5b"(click)="funcionCancelar45()">Cancelar</button>
+    <BR>
+    <p>5. GRÁFICAS Y ANEXOS.</p>
+    <div id="graficaBarras" class="container">
+      <div class=" text-center">
+        <h4 class="text-center">Generación diaria del sistema durante el mes de {{fechainforme| date:'MMMM':'+0100'}}.</h4>
+        <canvas baseChart
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [chartType]="barChartType"
+              [options]="barChartOptions"
+
+              (chartHover)="chartHovered($event)"
+              (chartClick)="chartClicked($event)"></canvas>
+          </div>
+    </div>
+
+  <input type='file' (change)="onSelectFile($event)">
+  <button type="button" (click)="m=m+50;">   +   </button>
+    <button type="button" (click)="m=m-50;">   -   </button>
+  <div id="123a">
+    <img [src]="url" [height]="m" [width]="m"></div>
+     <br/>
+
+    <p>{{m}}</p>
+  </div>
+
+
+  <div  id="contentToConvert" align="left" class="container" *ngIf="mostrar_REPORTE">
+    <img [src]="transform(base64Image)">
+
+
+
+
+    <p   align="right" class="my-4 py-4 mx-5 px-5 tittle" [ngStyle]="{'font-family': 'Arial'}">  {{curDate | date:'yyyy-MM-dd':'-0500'}}</p>
+    <p> </p>
+    <p class="tittle" align="center" [ngStyle]="{'font-family': 'Arial'}"><b><u><span [ngStyle]="{'background-color':'yellow'}">{{cliente.system_name}}</span></u></b></p>
+    <p class="tittle" align="center" [ngStyle]="{'font-family': 'Arial'}"><b><u><span [ngStyle]="{'background-color':'yellow'}">{{fechainforme| date:'MMMM':'+0100'|uppercase}} {{fechainforme| date:'yyyy':'+0100'|uppercase}}</span></u></b></p>
+    <p class="tittle" align="center" [ngStyle]="{'font-family': 'Arial'}" ><b>INFORME MENSUAL DE MONITOREO Y GENERACIÓN</b></p>
+
+    <p>  </p>
+
+      <p class="lt" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%'}">  1. CARACTERÍSTICAS DEL SISTEMA:</p>
+      <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">  - Módulos: <u><i>{{postCliente.modules}} módulos {{postCliente2.clientExcelObject.panel}} - {{postCliente2.clientExcelObject.modelo_Panel}} de {{postCliente2.clientExcelObject.watts_Panel}}W</i></u></p>
+
+      <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">  - Microinversores: <u><i>{{postCliente.modules}} Enphase Energy {{postCliente2.clientExcelObject.microinversor}}.</i></u></p>
+
+      <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">  - Capacidad total instalada:<u><i>{{postCliente2.clientExcelObject.sistema_kW}} kWp DC, {{postCliente.size_w/1000}} kW AC.</i></u></p>
+
+      <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">  - Inicio de Operación: <u><i>{{postCliente.operational_at*1000| date:'dd':'+0100'}} de {{postCliente.operational_at*1000| date:'MMMM':'+0100'}} de {{postCliente.operational_at*1000| date:'yyyy':'+0100'}}.</i></u></p>
+
+      <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">  - Instalación de medidor bidireccional: <u><i>{{medidor1}}</i></u></p>
+  <div></div>
+    <div class="lm" [innerHtml]="erro11 | safeHtml"  *ngIf="p1p1" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro12 | safeHtml"  *ngIf="p1p2" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro13 | safeHtml"  *ngIf="p1p3" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro14 | safeHtml"  *ngIf="p1p4" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro15 | safeHtml"  *ngIf="p1p5" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+
+
+    <p [ngStyle]="{'margin':'0','padding':'0'}"><span [innerHTML]="text| safeHtml">&nbsp;&nbsp;</span></p>
+
+
+    <p class="lt" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%'}">2. NOTAS DE GENERACIÓN:</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- Durante el mes de {{fechainforme| date:'MMMM':'+0100'}} el sistema funcionó satisfactoriamente.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"><span [ngStyle]="{'background-color':'yellow'}">- La generación total fue de {{postCliente2.totalGeneracion}} kWh durante el mes.</span></p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"><span [ngStyle]="{'background-color':'yellow'}">- La generación {{postCliente2.generationComparizon.indicator|lowercase}} en un {{postCliente2.generationComparizon.value}}% comparado al mes anterior.</span></p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- El módulo que más generó, aportó {{postCliente3.maxGeneration}} kWh en el mes de {{fechainforme| date:'MMMM':'+0100'}}.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- El módulo que menos generó, aportó {{postCliente3.minGeneration}} kWh en el mes de {{fechainforme| date:'MMMM':'+0100'}}.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- La mayor generación fue el día {{postCliente2.mayorGeneration.day}} con {{postCliente2.mayorGeneration.generation}} kWh.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- La menor generación fue el día {{postCliente2.minorGeneration.day}} con {{postCliente2.minorGeneration.generation}} kWh.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- Con la energía mensual generada podría alimentar por un día a {{postCliente2.houses}} casas sin tener que quemar una sola gota de combustible fósil.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- Se ha dejado de liberar {{postCliente2.metrictsTons}} toneladas de carbono a la atmósfera que es equivalente al almacenado por {{postCliente2.trees}} árboles. ¡Felicidades!</p>
+    <div class="lm" [innerHtml]="erro21 | safeHtml"  *ngIf="p2p1" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro22 | safeHtml"  *ngIf="p2p2" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro23 | safeHtml"  *ngIf="p2p3" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro24 | safeHtml"  *ngIf="p2p4" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro25 | safeHtml"  *ngIf="p2p5" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p [ngStyle]="{'margin-left': '10em','margin':'1'}"><img [src]="transform(base64arbolitos)"></p>
+
+
+
+
+    <p class="lt" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%'}">3. RECOMENDACIONES:</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- Realizar la limpieza y el mantenimiento en el período sugerido.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- Monitoreo diario de cada módulo fotovoltaico, verificando que se encuentre dentro del rango de potencia, voltaje y corriente.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- No exceder su consumo promedio para obtener un ahorro energético y económico favorable.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- Reportar cualquier anomalía a nuestro personal autorizado. Cualquier daño que haya en el proyecto por causas ajenas, el cliente cubrirá con la reparación.</p>
+    <p class="lm" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">- Le reiteramos que es importante incluir su sistema fotovoltaico en su póliza de seguro, por favor verifíquelo con su corredor de seguros.</p>
+    <div class="lm" [innerHtml]="erro31 | safeHtml"  *ngIf="p3p1" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p> </p>
+    <div class="lm" [innerHtml]="erro32 | safeHtml"  *ngIf="p3p2" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p></p>
+    <div class="lm" [innerHtml]="erro33 | safeHtml"  *ngIf="p3p3" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p></p>
+    <div class="lm" [innerHtml]="erro34 | safeHtml"  *ngIf="p3p4" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p></p>
+    <div class="lm" [innerHtml]="erro35 | safeHtml"  *ngIf="p3p5" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+
+
+    <p [ngStyle]="{'margin':'0','padding':'0'}"><span [innerHTML]="text| safeHtml">&nbsp;&nbsp;</span></p>
+
+
+    <p class="lt" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%'}">4. <span [ngStyle]="{'background-color':'yellow'}">PRÓXIMA LIMPIEZA Y MANTENIMIENTO:</span><span [innerHTML]="text| safeHtml">&nbsp;&nbsp;</span><span [ngStyle]="{'background-color':'yellow'}">{{fechalimpieza| date:'MMMM':'+0100'| titlecase}} {{fechalimpieza| date:'yyyy':'+0100'|uppercase}}.</span></p>
+    <div class="lm" [innerHtml]="erro41 | safeHtml"  *ngIf="p4p1" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p></p>
+    <div class="lm" [innerHtml]="erro42 | safeHtml"  *ngIf="p4p2" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p></p>
+    <div class="lm" [innerHtml]="erro43 | safeHtml"  *ngIf="p4p3" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p></p>
+    <div class="lm" [innerHtml]="erro44 | safeHtml"  *ngIf="p4p4" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+    <p></p>
+    <div class="lm" [innerHtml]="erro45 | safeHtml"  *ngIf="p4p5" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
+
+    <p [ngStyle]="{'margin':'0','padding':'0'}"><span [innerHTML]="text| safeHtml">&nbsp;&nbsp;</span></p>
+
+
+    <p class="lt" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%'}">5. GRÁFICAS Y ANEXOS.</p>
+
+
+ <img [src]="transform(graficaEnPNG)">
+ <img [src]="transform(imaggenprueba)">
+  </div>
+
+
+<div class="container">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <a href="#top"><button href="#" class="w3-btn w3-black" (click)="mostrar_REPORTE=true;chartApng();imagenesapng('123a')" *ngIf="!mostrar_REPORTE">Continuar</button></a>
+    <button href="#" class="w3-btn w3-blue" (click)="Export2Docx('contentToConvert',cliente.system_name+'_'+fechainforme)" *ngIf="mostrar_REPORTE">Crear .docx</button>
+
+    <button href="#" class="w3-btn w3-black w3-margin-left" (click)="F_atras()"*ngIf="!mostrar_REPORTE">Atras</button>
+    <a href="#top"><button href="#" class="w3-btn w3-black w3-margin-left" (click)="F_atrascrear()"*ngIf="mostrar_REPORTE">Atras</button></a>
+
+
+    <button align="right" href="#" class="w3-btn w3-dark-grey  w3-margin-left" (click)="cargaratras()"*ngIf="mostrar_REPORTE">Generar otro reporte</button>
+
+</div>
+
+</div>
+
+
+<app-footer></app-footer>
