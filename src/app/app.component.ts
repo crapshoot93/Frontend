@@ -32,15 +32,23 @@ export class AppComponent implements OnInit{
 
 
 url = '';
-
+anchoo(){
+  var myImg = document.getElementById('meh') as HTMLImageElement;
+        this.mx = myImg.width;
+        this.my = myImg.height;
+        this.mk=this.my/this.mx;
+        this.a=true;
+}
 onSelectFile(event) {
+
   if (event.target.files && event.target.files[0]) {
     var reader = new FileReader();
-
+this.a=false;
+    //this.m=event.nativeElement.offsetWidth;
     reader.readAsDataURL(event.target.files[0]); // read file as data url
 
     reader.onload = (event) => { // called once readAsDataURL is completed
-      this.url = (<HTMLInputElement>event.target).result; //this.url = event.target.result;
+      this.url = (event.target as HTMLInputElement).result; //this.url = event.target.result;
     }
   }
 }
@@ -49,7 +57,9 @@ onSelectFile(event) {
 //  <button type="button" (click)="m=m+50;">   +   </button>
 //  <p>{{m}}</p>
 
-
+mx:number=500;
+my:number=500;
+mk:number;
 
 
   m:number=50;
@@ -322,6 +332,7 @@ mostrar:boolean=true;
   labelsGraficaBar:string[]=[" ",""];
   graficaEnPNG:any;
   imaggenprueba:any;
+  a:boolean=false;
   mostrar2:boolean=false;
   mostrar3:boolean=false;
   mostrar_REPORTE:boolean=false;
@@ -365,6 +376,12 @@ mostrar:boolean=true;
   p4par3:string="";
   p4par4:string="";
   p4par5:string="";
+  p4par6:string="";
+  p4par7:string="";
+  p4par8:string="";
+  p4par9:string="";
+  p4par10:string="";
+
 
 
   p1p1:boolean=false;

@@ -307,16 +307,27 @@
               (chartHover)="chartHovered($event)"
               (chartClick)="chartClicked($event)"></canvas>
           </div>
-    </div>
 
-  <input type='file' (change)="onSelectFile($event)">
-  <button type="button" (click)="m=m+50;">   +   </button>
-    <button type="button" (click)="m=m-50;">   -   </button>
-  <div id="123a">
-    <img [src]="url" [height]="m" [width]="m"></div>
+    </div>
+    <p class="lt" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">Anexos.</p>
+  <input type='file' (change)="onSelectFile($event)" >
+
+    <button type="button" (click)="anchoo()" *ngIf="!a">   Escalar   </button>
+    <div *ngIf="a">
+      <button type="button" (click)="mx=(mx+0.1)/mk;my=mk*mx"*ngIf="mx>my">   +   </button>
+  <button type="button" (click)="mx=(mx-0.1)*mk;my=mk*mx"*ngIf="mx>my">   -   </button>
+  <button type="button" (click)="mx=(mx+0.1)*mk;my=mk*mx"*ngIf="mx<my">   +   </button>
+  <button type="button" (click)="mx=(mx-0.1)/mk;my=mk*mx"*ngIf="mx<my">   -   </button>
+  <button type="button" (click)="mx=mx+10;my=mx"*ngIf="mx==my">   +   </button>
+  <button type="button" (click)="mx=(mx-10);my=mx"*ngIf="mx==my">   -   </button>
+    </div>
+    <div id="123a"  >
+    <img [src]="url" id="meh" *ngIf="!a">
+    <img [src]="url" [height]="my"[width]="mx" *ngIf="a" ></div>
      <br/>
 
-    <p>{{m}}</p>
+    <p>{{mx}}</p>
+    <p>{{my}}</p>
   </div>
 
 
@@ -378,7 +389,7 @@
     <div class="lm" [innerHtml]="erro24 | safeHtml"  *ngIf="p2p4" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
     <p> </p>
     <div class="lm" [innerHtml]="erro25 | safeHtml"  *ngIf="p2p5" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}"></div>
-    <p [ngStyle]="{'margin-left': '10em','margin':'1'}"><img [src]="transform(base64arbolitos)"></p>
+    <p [ngStyle]="{'text-align':'center'}"><img [src]="transform(base64arbolitos)"></p>
 
 
 
@@ -421,7 +432,12 @@
 
 
  <img [src]="transform(graficaEnPNG)">
+ <p class="lt" [ngStyle]="{'font-family': 'Arial','margin':'0','padding':'0','line-height':'150%','text-indent': '25px'}">Anexos.</p>
  <img [src]="transform(imaggenprueba)">
+
+
+
+
   </div>
 
 
